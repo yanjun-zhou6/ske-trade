@@ -34,3 +34,4 @@
 
 [cache summaries](https://juejin.cn/post/6844904106499260430#heading-19)
 [service worker](https://pwa.alienzhou.com/3-rang-ni-de-webapp-li-xian-ke-yong#3.-ru-he-shi-yong-service-worker-shi-xian-li-xian-ke-yong-de-miao-kai-ying-yong)
+[websocket authentication authorization](http://www.moye.me/2017/02/10/websocket-authentication-and-authorization/)
