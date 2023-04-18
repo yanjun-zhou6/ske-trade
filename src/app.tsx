@@ -1,130 +1,176 @@
-import { useState } from 'react'
-import './app.css'
+import React from 'react'
+import styled from 'styled-components'
+import { useTable, useBlockLayout } from 'react-table'
+import { FixedSizeList } from 'react-window'
+// import scrollbarWidth from './scrollbarWidth'
 
-interface SquareProp {
-  value: squareValue
-  onSquareClick: () => void
-}
+import makeData from './makeData'
 
-const Square = ({ value, onSquareClick }: SquareProp): JSX.Element => {
-  return (
-    <button className='square' onClick={onSquareClick}>
-      {value}
-    </button>
+const Styles = styled.div`
+  padding: 1rem;
+
+  .table {
+    display: inline-block;
+    border-spacing: 0;
+    border: 1px solid black;
+
+    .tr {
+      :last-child {
+        .td {
+          border-bottom: 0;
+        }
+      }
+    }
+
+    .th,
+    .td {
+      margin: 0;
+      padding: 0.5rem;
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+
+      :last-child {
+        border-right: 1px solid black;
+      }
+    }
+  }
+`
+
+const Table = ({ columns, data }): JSX.Element => {
+  // Use the state and functions returned from useTable to build your UI
+
+  const defaultColumn = React.useMemo(
+    () => ({
+      width: 150,
+    }),
+    [],
   )
-}
 
-interface BoardProp {
-  xIsNext: true | false
-  squares: squareValue[]
-  onPlay: (nextSquares: squareValue[]) => void
-}
+  const scrollBarSize = React.useMemo(() => scrollbarWidth(), [])
 
-const Board = ({ xIsNext, squares, onPlay }: BoardProp): JSX.Element => {
-  function handleClick(i: number): void {
-    if (calculateWinner(squares) ?? squares[i]) {
-      return
-    }
-    const nextSquares = squares.slice()
-    if (xIsNext) {
-      nextSquares[i] = 'X'
-    } else {
-      nextSquares[i] = 'O'
-    }
-    onPlay(nextSquares)
-  }
-
-  const winner = calculateWinner(squares)
-  let status
-  if (winner) {
-    status = 'Winner: ' + winner
-  } else {
-    status = 'Next player: ' + (xIsNext ? 'X' : 'O')
-  }
-
-  return (
-    <>
-      <div className='status'>{status}</div>
-      <div className='board-row'>
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className='board-row'>
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className='board-row'>
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
-    </>
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    totalColumnsWidth,
+    prepareRow,
+  } = useTable(
+    {
+      columns,
+      data,
+      defaultColumn,
+    },
+    useBlockLayout,
   )
-}
 
-const Game = (): JSX.Element => {
-  const [history, setHistory] = useState([Array(9).fill(null)])
-  const [currentMove, setCurrentMove] = useState(0)
-  const xIsNext = currentMove % 2 === 0
-  const currentSquares = history[currentMove]
+  const RenderRow = React.useCallback(
+    ({ index, style }) => {
+      const row = rows[index]
+      prepareRow(row)
+      return (
+        <div
+          {...row.getRowProps({
+            style,
+          })}
+          className='tr'
+        >
+          {row.cells.map((cell) => {
+            return (
+              <div {...cell.getCellProps()} className='td'>
+                {cell.render('Cell')}
+              </div>
+            )
+          })}
+        </div>
+      )
+    },
+    [prepareRow, rows],
+  )
 
-  function handlePlay(nextSquares: squareValue[]): void {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
-    setHistory(nextHistory)
-    setCurrentMove(nextHistory.length - 1)
-  }
-
-  function jumpTo(nextMove: number): void {
-    setCurrentMove(nextMove)
-  }
-
-  const moves = history.map((squares, move) => {
-    let description
-    if (move > 0) {
-      description = `Go to move #' + ${move}`
-    } else {
-      description = 'Go to game start'
-    }
-    return (
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
-      </li>
-    )
-  })
-
+  // Render the UI for your table
   return (
-    <div className='game'>
-      <div className='game-board'>
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+    <div {...getTableProps()} className='table'>
+      <div>
+        {headerGroups.map((headerGroup) => (
+          <div {...headerGroup.getHeaderGroupProps()} className='tr'>
+            {headerGroup.headers.map((column) => (
+              <div {...column.getHeaderProps()} className='th'>
+                {column.render('Header')}
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
-      <div className='game-info'>
-        <ol>{moves}</ol>
+
+      <div {...getTableBodyProps()}>
+        <FixedSizeList
+          height={400}
+          itemCount={rows.length}
+          itemSize={35}
+          width={totalColumnsWidth + scrollBarSize}
+        >
+          {RenderRow}
+        </FixedSizeList>
       </div>
     </div>
   )
 }
 
-type squareValue = 'X' | 'O' | null
-function calculateWinner(squares: squareValue[]): squareValue {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ]
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i]
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a]
-    }
-  }
-  return null
+const TradeBoard = (): JSX.Element => {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Row Index',
+        accessor: (row, i) => i,
+      },
+      {
+        Header: 'Name',
+        columns: [
+          {
+            Header: 'First Name',
+            accessor: 'firstName',
+          },
+          {
+            Header: 'Last Name',
+            accessor: 'lastName',
+          },
+        ],
+      },
+      {
+        Header: 'Info',
+        columns: [
+          {
+            Header: 'Age',
+            accessor: 'age',
+            width: 50,
+          },
+          {
+            Header: 'Visits',
+            accessor: 'visits',
+            width: 60,
+          },
+          {
+            Header: 'Status',
+            accessor: 'status',
+          },
+          {
+            Header: 'Profile Progress',
+            accessor: 'progress',
+          },
+        ],
+      },
+    ],
+    [],
+  )
+
+  const data = React.useMemo(() => makeData(100000), [])
+
+  return (
+    <Styles>
+      <Table columns={columns} data={data} />
+    </Styles>
+  )
 }
 
-export default Game
+export default TradeBoard
