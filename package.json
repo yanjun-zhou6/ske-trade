@@ -5,12 +5,12 @@
   "description": "Integrate Rxjs with react in Front End.",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --open",
+    "build": "NODE_ENV=production webpack",
     "prepare": "husky install",
     "lint": "eslint src --ext .tsx,.ts --fix",
     "format": "prettier . --write",
-    "start": "webpack serve --open",
-    "build": "NODE_ENV=production webpack"
+    "check-types": "npx tsc"
   },
   "author": "Addy Zhou",
   "license": "ISC",
@@ -52,7 +52,10 @@
   },
   "lint-staged": {
     "*": "prettier --check",
-    "src/**/*.{ts,tsx}": "eslint --ext .tsx,.ts"
+    "*.ts": [
+      "eslint --ext .ts",
+      "bash -c 'npm run check-types'"
+    ]
   },
   "browserslist": "> 0.25%, not dead",
   "dependencies": {
