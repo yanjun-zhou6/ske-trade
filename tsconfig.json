@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    // leave jsx convertion to babel, here preserve jsx original syntax.
+    // https://www.typescriptlang.org/docs/handbook/jsx.html
+    "jsx": "preserve",
+    // keep ES module for tree-shaking, and leave works of syntax and polyfill compilation to babel
+    "target": "es2022",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    // Ensure that .d.ts files are created by tsc, but not .js files
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    // Ensure that Babel can safely transpile files in the TypeScript project
+    "isolatedModules": true
+  }
+}

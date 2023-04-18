@@ -1,0 +1,20 @@
+{
+  "presets": [
+    [
+      "@babel/env",
+      {
+        "useBuiltIns": "usage",
+        "corejs": "3.29"
+      }
+    ],
+    [
+      "@babel/preset-react",
+      {
+        // Support for the new JSX transform is available in Babel v7.9.0 and above.
+        // https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#manual-babel-setup
+        "runtime": "automatic"
+      }
+    ],
+    "@babel/preset-typescript"
+  ]
+}
