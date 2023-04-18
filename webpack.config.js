@@ -5,7 +5,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const staticPath = path.join(__dirname, 'public/')
+const srcPath = path.join(__dirname, 'src/')
 const devMode = process.env.NODE_ENV !== 'production'
 
 const config = {
@@ -34,7 +34,6 @@ const config = {
   },
   devtool: devMode ? 'inline-source-map' : 'source-map',
   devServer: {
-    static: staticPath,
     port: 3000,
     hot: true,
   },
@@ -43,7 +42,7 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.join(staticPath, 'index.html'),
+      template: path.join(srcPath, 'index.html'),
     }),
   ].concat(
     devMode

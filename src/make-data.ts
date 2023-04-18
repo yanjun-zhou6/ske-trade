@@ -1,19 +1,19 @@
 import { faker } from '@faker-js/faker'
 
 enum Direction {
-  Up,
-  Down,
-  Origin,
+  Up = 'Up',
+  Down = 'Down',
+  Origin = 'Origin',
 }
 
 enum TradeStatus {
-  New,
-  Updated,
-  Closed,
+  New = 'New',
+  Updated = 'Updated',
+  Closed = 'Closed',
 }
 
 interface TradeEntity {
-  TradeId: string
+  tradeId: string
   tradeName: string
   tradeSymbol: string
   currentPrice: string
@@ -25,21 +25,30 @@ interface TradeEntity {
   tradeStatus: TradeStatus
 }
 
-export function generateTradeEntity(): TradeEntity {
+const formatDate = (d: Date): string => {
+  const dformat =
+    [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
+    ' ' +
+    [d.getHours(), d.getMinutes(), d.getSeconds()].join(':')
+
+  return dformat
+}
+
+const generateTradeEntity = (): TradeEntity => {
   return {
-    TradeId: faker.datatype.uuid(),
+    tradeId: faker.datatype.uuid(),
     tradeName: faker.word.adjective(),
     tradeSymbol: faker.datatype.uuid(),
     currentPrice: faker.finance.amount(),
     lastPrice: faker.finance.amount(),
     traderName: faker.name.fullName(),
     trend: Direction.Origin,
-    updateTime: Date().toString(),
-    createTime: faker.date.past().toTimeString(),
+    updateTime: formatDate(new Date()),
+    createTime: formatDate(faker.date.past()),
     tradeStatus: TradeStatus.New,
   }
 }
 
-Array.from({ length: 10 }).forEach(() => {
-  USERS.push(createRandomUser())
-})
+export const makeData = (number: number): TradeEntity[] => {
+  return Array.from({ length: number }).map(() => generateTradeEntity())
+}
