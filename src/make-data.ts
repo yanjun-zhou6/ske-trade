@@ -37,7 +37,7 @@ const formatDate = (d: Date): string => {
 const generateTradeEntity = (): TradeEntity => {
   return {
     tradeId: faker.datatype.uuid(),
-    tradeName: faker.word.adjective(),
+    tradeName: faker.name.lastName(),
     tradeSymbol: faker.datatype.uuid(),
     currentPrice: faker.finance.amount(),
     lastPrice: faker.finance.amount(),
