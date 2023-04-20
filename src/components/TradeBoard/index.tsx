@@ -1,6 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { makeData } from '../../make-data'
 import Table from '../Table'
 
 const Title = styled.h2`
@@ -8,12 +7,12 @@ const Title = styled.h2`
 `
 
 const TradeBoard = (): JSX.Element => {
+  const [data, setData] = useState([])
+
+  useEffect(() => {}, [])
+
   const columns = useMemo(
     () => [
-      {
-        Header: 'Trade Id',
-        accessor: 'tradeId',
-      },
       {
         Header: 'Trade Name',
         accessor: 'tradeName',
@@ -53,8 +52,6 @@ const TradeBoard = (): JSX.Element => {
     ],
     [],
   )
-
-  const data = useMemo(() => makeData(100), [])
 
   return (
     <>
