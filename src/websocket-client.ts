@@ -1,6 +1,6 @@
 import { Subject, Observable } from 'rxjs'
 import { filter } from 'rxjs/operators'
-import { Response } from './model'
+import { Response } from './types'
 
 export interface Message {
   eventType: string

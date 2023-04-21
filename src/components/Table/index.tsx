@@ -1,9 +1,14 @@
-import { Column, useBlockLayout, useTable } from 'react-table'
-import { useMemo, useCallback, ComponentType, CSSProperties } from 'react'
-import { FixedSizeList, ListChildComponentProps } from 'react-window'
+import {
+  Column,
+  useBlockLayout,
+  useTable,
+  Row as ReactTableRow,
+} from 'react-table'
+import { useMemo, useCallback, CSSProperties, PureComponent } from 'react'
+import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import styled from 'styled-components'
-import ArrowDown from './down.svg'
+import Row, { RowColors } from './row'
 
 interface TableProp {
   columns: Array<Column<object>>
@@ -11,6 +16,7 @@ interface TableProp {
   isNextPageLoading: boolean
   loadMore: (startIndex: number, stopIndex: number) => Promise<void>
   hasNextPage: boolean
+  rowColors?: RowColors
 }
 
 const Styles = styled.div`
@@ -49,6 +55,7 @@ const Table = ({
   isNextPageLoading,
   loadMore,
   hasNextPage,
+  rowColors,
 }: TableProp): JSX.Element => {
   const scrollBarSize = useMemo(() => scrollbarWidth(), [])
   const {
@@ -79,36 +86,6 @@ const Table = ({
       return !hasNextPage || index < data.length
     },
     [data.length, hasNextPage],
-  )
-
-  const RenderRow = useCallback(
-    ({ index, style }: { index: number; style: CSSProperties }) => {
-      // if (isItemLoaded(index)) {
-      //   return <div style={style}>Loading</div>
-      // }
-      const row = rows[index]
-      if (row) {
-        prepareRow(row)
-        return (
-          <div
-            {...row.getRowProps({
-              style,
-            })}
-            className='tr'
-          >
-            {row.cells.map((cell) => {
-              return (
-                // eslint-disable-next-line react/jsx-key
-                <div {...cell.getCellProps()} className='td'>
-                  {cell.render('Cell')}
-                </div>
-              )
-            })}
-          </div>
-        )
-      }
-    },
-    [isItemLoaded, prepareRow, rows],
   )
 
   return (
@@ -143,7 +120,17 @@ const Table = ({
                 onItemsRendered={onItemsRendered}
                 ref={ref}
               >
-                {RenderRow as ComponentType<ListChildComponentProps<any>>}
+                {/* {RenderRow as ComponentType<ListChildComponentProps<any>>} */}
+                {({ index, style }) => (
+                  <RenderRow
+                    index={index}
+                    style={style}
+                    isItemLoaded={isItemLoaded}
+                    prepareRow={prepareRow}
+                    rows={rows}
+                    rowColors={rowColors}
+                  ></RenderRow>
+                )}
               </FixedSizeList>
             )}
           </InfiniteLoader>
@@ -164,6 +151,36 @@ const scrollbarWidth = (): number => {
   const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
   document.body.removeChild(scrollDiv)
   return scrollbarWidth
+}
+
+class RenderRow extends PureComponent<{
+  index: number
+  style: CSSProperties
+  isItemLoaded: (index: number) => boolean
+  prepareRow: (row: ReactTableRow<object>) => void
+  rows: Array<ReactTableRow<object>>
+  rowColors?: RowColors
+}> {
+  render() {
+    const { index, style, isItemLoaded, prepareRow, rows, rowColors } =
+      this.props
+    if (!isItemLoaded(index)) {
+      return <div style={style}>Loading</div>
+    }
+    const row = rows[index]
+    if (row) {
+      prepareRow(row)
+      return (
+        <Row
+          row={rows[index]}
+          tableRowProps={row.getRowProps({
+            style,
+          })}
+          rowColors={rowColors}
+        />
+      )
+    } else return null
+  }
 }
 
 export default Table

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { firstValueFrom } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import styled from 'styled-components'
@@ -11,14 +11,14 @@ import {
   TradeEntity,
   GetTradesAPIReturn,
   UpdateTradesAPIReturn,
-} from '../../model'
+} from '../../types'
+import { CleanTradeStatusProvider } from '../../hooks/use-clean-trade-status'
 
 const Title = styled.h2`
   padding-left: 1rem;
 `
 
 const TradeBoard = (): JSX.Element => {
-  const loadRange = useRef({ startIndex: -1, stopIndex: 0 })
   const [tradeMap, setTradeMap] = useState<Record<string, TradeEntity>>({})
   const [hasNextPage, setHasNextPage] = useState(true)
   const [page, setPage] = useState(1)
@@ -27,76 +27,68 @@ const TradeBoard = (): JSX.Element => {
 
   const loadTrades = useCallback(
     async (...args: any) => {
-      const [startIndex, stopIndex] = args
-      if (startIndex === loadRange.current.startIndex) return
       setIsNextPageLoading(true)
       const response = await firstValueFrom(
         webSocketClient?.request<GetTradesAPIReturn>({
           eventType: 'getTrades',
           page,
-          amount: 20,
+          amount: 10,
         }),
       )
       const { trades, hasMore } = response.data
-      // console.log('hasMore', hasMore, page)
       const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
-        acc[trade.tradeId] = {
-          ...trade,
-          updateTime: moment(trade.updateTime).format('hh:mm:ss MM/DD/YYYY'),
-          createTime: moment(trade.createTime).format('hh:mm:ss MM/DD/YYYY'),
-        }
+        acc[trade.tradeId] = convertTradeFormat(trade)
         return acc
       }, {})
-      // console.log(trades)
       setTradeMap({ ...tradeMap, ...trade })
       setIsNextPageLoading(false)
       setHasNextPage(hasMore)
       setPage(page + 1)
-      loadRange.current = { startIndex, stopIndex }
     },
     [tradeMap, page],
   )
 
-  // useEffect(() => {
-  //   ;(async () => {
-  //     await loadTrades()
-  //   })()
-  // }, [])
-
-  /**
-  useEffect(() => {
+  useEffect(function observeTradesChange() {
     const subscription = webSocketClient?.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
       .subscribe((response) => {
         const data = response.data as UpdateTradesAPIReturn
-        const { updateTrades } = data
-        console.log('s', updateTrades)
-        const newTradeMap = produce(tradeMap, (draftState) => {
-          updateTrades.forEach(
-            (updateTrade) =>
-              (draftState[updateTrade.tradeId] = {
-                ...updateTrade,
-                updateTime: moment(updateTrade.updateTime).format(
-                  'hh:mm:ss MM/DD/YYYY',
-                ),
-                createTime: moment(updateTrade.createTime).format(
-                  'hh:mm:ss MM/DD/YYYY',
-                ),
-              }),
-          )
-        })
-
-        setTradeMap(newTradeMap)
-
-        return () => subscription?.unsubscribe()
+        const { updateTrades, addTrades } = data
+        setTradeMap(
+          produce((draftState) => {
+            updateTrades.forEach((updateTrade) => {
+              draftState[updateTrade.tradeId] = markUpdated(
+                convertTradeFormat(updateTrade),
+              )
+            })
+            // addTrades.forEach((addTrade) => {
+            //   draftState[addTrade.tradeId] = convertTradeFormat(addTrade)
+            // })
+          }),
+        )
       })
-  }, [tradeMap, webSocketClient?.responseObservable])
-  */
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const cleanTradeStatus = useCallback(
+    (tradeId: string, properties: Record<'updated' | 'created', false>) => {
+      setTradeMap(
+        produce((draftState) => {
+          draftState[tradeId].updated = properties.updated
+          draftState[tradeId].created = properties.created
+
+          return draftState
+        }),
+      )
+    },
+    [],
+  )
+
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
 
-  console.log('number', trades.length, Object.keys(tradeMap).length)
   return (
-    <>
+    <CleanTradeStatusProvider value={cleanTradeStatus}>
       <Title>Trade Board Table</Title>
       <Table
         columns={columns}
@@ -105,8 +97,32 @@ const TradeBoard = (): JSX.Element => {
         loadMore={loadTrades}
         hasNextPage={hasNextPage}
       />
-    </>
+    </CleanTradeStatusProvider>
   )
+}
+
+const convertTradeFormat = (trade: TradeEntity) => {
+  return {
+    ...trade,
+    updateTime: moment(trade.updateTime).format('hh:mm:ss MM/DD/YYYY'),
+    createTime: moment(trade.createTime).format('hh:mm:ss MM/DD/YYYY'),
+    updated: false,
+    created: false,
+  }
+}
+
+const markUpdated = (trade: TradeEntity) => {
+  return {
+    ...trade,
+    updated: true,
+  }
+}
+
+const markCreated = (trade: TradeEntity) => {
+  return {
+    ...trade,
+    created: true,
+  }
 }
 
 export default TradeBoard
