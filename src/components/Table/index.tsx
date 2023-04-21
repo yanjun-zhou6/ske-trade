@@ -50,9 +50,7 @@ const Table = ({
   loadMore,
   hasNextPage,
 }: TableProp): JSX.Element => {
-  console.log(data, columns)
   const scrollBarSize = useMemo(() => scrollbarWidth(), [])
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -68,31 +66,6 @@ const Table = ({
     useBlockLayout,
   )
 
-  const RenderRow = useCallback(
-    ({ index, style }: { index: number; style: CSSProperties }) => {
-      const row = rows[index]
-      prepareRow(row)
-      return (
-        <div
-          {...row.getRowProps({
-            style,
-          })}
-          className='tr'
-        >
-          {row.cells.map((cell) => {
-            return (
-              // eslint-disable-next-line react/jsx-key
-              <div {...cell.getCellProps()} className='td'>
-                {cell.render('Cell')}
-              </div>
-            )
-          })}
-        </div>
-      )
-    },
-    [prepareRow, rows],
-  )
-
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const itemCount = hasNextPage ? data.length + 1 : data.length
 
@@ -101,7 +74,42 @@ const Table = ({
   const loadMoreItems = isNextPageLoading ? () => {} : loadMore
 
   // Every row is loaded except for our loading indicator row.
-  const isItemLoaded = (index: number) => !hasNextPage || index < data.length
+  const isItemLoaded = useCallback(
+    (index: number) => {
+      return !hasNextPage || index < data.length
+    },
+    [data.length, hasNextPage],
+  )
+
+  const RenderRow = useCallback(
+    ({ index, style }: { index: number; style: CSSProperties }) => {
+      // if (isItemLoaded(index)) {
+      //   return <div style={style}>Loading</div>
+      // }
+      const row = rows[index]
+      if (row) {
+        prepareRow(row)
+        return (
+          <div
+            {...row.getRowProps({
+              style,
+            })}
+            className='tr'
+          >
+            {row.cells.map((cell) => {
+              return (
+                // eslint-disable-next-line react/jsx-key
+                <div {...cell.getCellProps()} className='td'>
+                  {cell.render('Cell')}
+                </div>
+              )
+            })}
+          </div>
+        )
+      }
+    },
+    [isItemLoaded, prepareRow, rows],
+  )
 
   return (
     <Styles>

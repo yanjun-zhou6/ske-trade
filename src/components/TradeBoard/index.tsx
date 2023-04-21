@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { firstValueFrom } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import styled from 'styled-components'
@@ -6,7 +6,7 @@ import { produce } from 'immer'
 import moment from 'moment'
 import { useWebSocketClient } from '../../hooks/use-websocket-client'
 import Table from '../Table'
-// import { columns } from './config'
+import { columns } from './config'
 import {
   TradeEntity,
   GetTradesAPIReturn,
@@ -18,14 +18,17 @@ const Title = styled.h2`
 `
 
 const TradeBoard = (): JSX.Element => {
+  const loadRange = useRef({ startIndex: -1, stopIndex: 0 })
   const [tradeMap, setTradeMap] = useState<Record<string, TradeEntity>>({})
-  const [page, setPage] = useState(1)
   const [hasNextPage, setHasNextPage] = useState(true)
+  const [page, setPage] = useState(1)
   const [isNextPageLoading, setIsNextPageLoading] = useState(false)
   const webSocketClient = useWebSocketClient()
 
   const loadTrades = useCallback(
     async (...args: any) => {
+      const [startIndex, stopIndex] = args
+      if (startIndex === loadRange.current.startIndex) return
       setIsNextPageLoading(true)
       const response = await firstValueFrom(
         webSocketClient?.request<GetTradesAPIReturn>({
@@ -35,6 +38,7 @@ const TradeBoard = (): JSX.Element => {
         }),
       )
       const { trades, hasMore } = response.data
+      // console.log('hasMore', hasMore, page)
       const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
         acc[trade.tradeId] = {
           ...trade,
@@ -43,19 +47,21 @@ const TradeBoard = (): JSX.Element => {
         }
         return acc
       }, {})
-      setTradeMap(trade)
-      setPage(page + 1)
+      // console.log(trades)
+      setTradeMap({ ...tradeMap, ...trade })
       setIsNextPageLoading(false)
       setHasNextPage(hasMore)
+      setPage(page + 1)
+      loadRange.current = { startIndex, stopIndex }
     },
-    [page, webSocketClient],
+    [tradeMap, page],
   )
 
-  useEffect(() => {
-    ;(async () => {
-      await loadTrades()
-    })()
-  }, [webSocketClient, page, loadTrades])
+  // useEffect(() => {
+  //   ;(async () => {
+  //     await loadTrades()
+  //   })()
+  // }, [])
 
   /**
   useEffect(() => {
@@ -86,49 +92,9 @@ const TradeBoard = (): JSX.Element => {
       })
   }, [tradeMap, webSocketClient?.responseObservable])
   */
-  const columns = useMemo(
-    () => [
-      {
-        Header: 'Trade Name',
-        accessor: 'tradeName',
-      },
-      {
-        Header: 'Trade Symbol',
-        accessor: 'tradeSymbol',
-      },
-      {
-        Header: 'Current Price',
-        accessor: 'currentPrice',
-      },
-      {
-        Header: 'Last Price',
-        accessor: 'lastPrice',
-      },
-      {
-        Header: 'Trader Name',
-        accessor: 'traderName',
-      },
-      {
-        Header: 'Trend',
-        accessor: 'trend',
-      },
-      {
-        Header: 'Update Time',
-        accessor: 'updateTime',
-      },
-      {
-        Header: 'Create Time',
-        accessor: 'createTime',
-      },
-      {
-        Header: 'Trade Status',
-        accessor: 'tradeStatus',
-      },
-    ],
-    [],
-  )
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
 
+  console.log('number', trades.length, Object.keys(tradeMap).length)
   return (
     <>
       <Title>Trade Board Table</Title>
