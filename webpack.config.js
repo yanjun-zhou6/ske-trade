@@ -1,8 +1,11 @@
 import path, { dirname } from 'path'
+import webpack from 'webpack'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { fileURLToPath } from 'url'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const srcPath = path.join(__dirname, 'src/')
@@ -43,6 +46,9 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.join(srcPath, 'index.html'),
+    }),
+    new webpack.DefinePlugin({
+      'process.env.SOCKET_ADDRESS': JSON.stringify(process.env.SOCKET_ADDRESS),
     }),
   ].concat(
     devMode

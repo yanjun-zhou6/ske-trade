@@ -1,21 +1,21 @@
 import { createContext, useContext } from 'react'
+import { WebSocketClient } from '../websocket-client'
 
-const creactWebsocketClient = () => {
-  const WebsocketClientContext = createContext(null)
+const creactWebSocketClient = () => {
+  const WebsocketClientContext = createContext<WebSocketClient | null>(null)
 
-  const useWebsocketClient = () => {
+  const useWebSocketClient = () => {
     const websocketClient = useContext(WebsocketClientContext)
 
     return websocketClient
   }
 
-  const WebsocketClientProvider: React.FC = ({ children }) => {
-    return (
-      <WebsocketClientContext.Provider>
-        {children}
-      </WebsocketClientContext.Provider>
-    )
+  return {
+    useWebSocketClient,
+    WebsocketClientProvider: WebsocketClientContext.Provider,
   }
-
-  return { useWebsocketClient }
 }
+
+const { useWebSocketClient, WebsocketClientProvider } = creactWebSocketClient()
+
+export { useWebSocketClient, WebsocketClientProvider }
