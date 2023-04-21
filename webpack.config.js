@@ -33,6 +33,10 @@ const config = {
           'css-loader',
         ],
       },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
     ],
   },
   devtool: devMode ? 'inline-source-map' : 'source-map',

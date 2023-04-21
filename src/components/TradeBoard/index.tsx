@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { firstValueFrom } from 'rxjs'
 import { filter } from 'rxjs/operators'
 import styled from 'styled-components'
 import { produce } from 'immer'
 import moment from 'moment'
 import { useWebSocketClient } from '../../hooks/use-websocket-client'
 import Table from '../Table'
+// import { columns } from './config'
 import {
   TradeEntity,
   GetTradesAPIReturn,
@@ -17,37 +19,45 @@ const Title = styled.h2`
 
 const TradeBoard = (): JSX.Element => {
   const [tradeMap, setTradeMap] = useState<Record<string, TradeEntity>>({})
+  const [page, setPage] = useState(1)
+  const [hasNextPage, setHasNextPage] = useState(true)
+  const [isNextPageLoading, setIsNextPageLoading] = useState(false)
   const webSocketClient = useWebSocketClient()
 
-  useEffect(() => {
-    webSocketClient
-      ?.request<GetTradesAPIReturn>({
-        eventType: 'getTrades',
-        page: 0,
-        amount: 10000,
-      })
-      .subscribe((response) => {
-        console.log(response.data.totalAmount)
-        const trade = response.data.trades.reduce<Record<string, TradeEntity>>(
-          (acc, trade) => {
-            acc[trade.tradeId] = {
-              ...trade,
-              updateTime: moment(trade.updateTime).format(
-                'hh:mm:ss MM/DD/YYYY',
-              ),
-              createTime: moment(trade.createTime).format(
-                'hh:mm:ss MM/DD/YYYY',
-              ),
-            }
-            return acc
-          },
-          {},
-        )
-        setTradeMap(trade)
-      })
-  }, [webSocketClient])
+  const loadTrades = useCallback(
+    async (...args: any) => {
+      setIsNextPageLoading(true)
+      const response = await firstValueFrom(
+        webSocketClient?.request<GetTradesAPIReturn>({
+          eventType: 'getTrades',
+          page,
+          amount: 20,
+        }),
+      )
+      const { trades, hasMore } = response.data
+      const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
+        acc[trade.tradeId] = {
+          ...trade,
+          updateTime: moment(trade.updateTime).format('hh:mm:ss MM/DD/YYYY'),
+          createTime: moment(trade.createTime).format('hh:mm:ss MM/DD/YYYY'),
+        }
+        return acc
+      }, {})
+      setTradeMap(trade)
+      setPage(page + 1)
+      setIsNextPageLoading(false)
+      setHasNextPage(hasMore)
+    },
+    [page, webSocketClient],
+  )
 
-  /** 
+  useEffect(() => {
+    ;(async () => {
+      await loadTrades()
+    })()
+  }, [webSocketClient, page, loadTrades])
+
+  /**
   useEffect(() => {
     const subscription = webSocketClient?.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
@@ -75,9 +85,7 @@ const TradeBoard = (): JSX.Element => {
         return () => subscription?.unsubscribe()
       })
   }, [tradeMap, webSocketClient?.responseObservable])
-*/
-  const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
-
+  */
   const columns = useMemo(
     () => [
       {
@@ -119,11 +127,18 @@ const TradeBoard = (): JSX.Element => {
     ],
     [],
   )
+  const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
 
   return (
     <>
       <Title>Trade Board Table</Title>
-      <Table columns={columns} data={trades} />
+      <Table
+        columns={columns}
+        data={trades}
+        isNextPageLoading={isNextPageLoading}
+        loadMore={loadTrades}
+        hasNextPage={hasNextPage}
+      />
     </>
   )
 }

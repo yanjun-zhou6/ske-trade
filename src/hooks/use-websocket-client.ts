@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react'
-import { WebSocketClient } from '../websocket-client'
+import createWebSocketClient, { WebSocketClient } from '../websocket-client'
+
+const webSocketClient = createWebSocketClient(process.env.SOCKET_ADDRESS ?? '')
 
 const creactWebSocketClient = () => {
-  const WebsocketClientContext = createContext<WebSocketClient | null>(null)
+  const WebsocketClientContext = createContext<WebSocketClient>(webSocketClient)
 
   const useWebSocketClient = () => {
     const websocketClient = useContext(WebsocketClientContext)

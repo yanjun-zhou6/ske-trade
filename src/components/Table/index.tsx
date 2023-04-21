@@ -1,11 +1,16 @@
 import { Column, useBlockLayout, useTable } from 'react-table'
 import { useMemo, useCallback, ComponentType, CSSProperties } from 'react'
 import { FixedSizeList, ListChildComponentProps } from 'react-window'
+import InfiniteLoader from 'react-window-infinite-loader'
 import styled from 'styled-components'
+import ArrowDown from './down.svg'
 
 interface TableProp {
   columns: Array<Column<object>>
   data: object[]
+  isNextPageLoading: boolean
+  loadMore: (startIndex: number, stopIndex: number) => Promise<void>
+  hasNextPage: boolean
 }
 
 const Styles = styled.div`
@@ -38,7 +43,14 @@ const Styles = styled.div`
   }
 `
 
-const Table = ({ columns, data }: TableProp): JSX.Element => {
+const Table = ({
+  columns,
+  data,
+  isNextPageLoading,
+  loadMore,
+  hasNextPage,
+}: TableProp): JSX.Element => {
+  console.log(data, columns)
   const scrollBarSize = useMemo(() => scrollbarWidth(), [])
 
   const {
@@ -81,6 +93,16 @@ const Table = ({ columns, data }: TableProp): JSX.Element => {
     [prepareRow, rows],
   )
 
+  // If there are more items to be loaded then add an extra row to hold a loading indicator.
+  const itemCount = hasNextPage ? data.length + 1 : data.length
+
+  // Only load 1 page of items at a time.
+  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+  const loadMoreItems = isNextPageLoading ? () => {} : loadMore
+
+  // Every row is loaded except for our loading indicator row.
+  const isItemLoaded = (index: number) => !hasNextPage || index < data.length
+
   return (
     <Styles>
       <div {...getTableProps()} className='table'>
@@ -99,14 +121,24 @@ const Table = ({ columns, data }: TableProp): JSX.Element => {
         </div>
 
         <div {...getTableBodyProps()}>
-          <FixedSizeList
-            height={400}
-            itemCount={rows.length}
-            itemSize={35}
-            width={totalColumnsWidth + scrollBarSize}
+          <InfiniteLoader
+            isItemLoaded={isItemLoaded}
+            itemCount={itemCount}
+            loadMoreItems={loadMoreItems}
           >
-            {RenderRow as ComponentType<ListChildComponentProps<any>>}
-          </FixedSizeList>
+            {({ onItemsRendered, ref }) => (
+              <FixedSizeList
+                height={500}
+                itemCount={itemCount}
+                itemSize={40}
+                width={totalColumnsWidth + scrollBarSize}
+                onItemsRendered={onItemsRendered}
+                ref={ref}
+              >
+                {RenderRow as ComponentType<ListChildComponentProps<any>>}
+              </FixedSizeList>
+            )}
+          </InfiniteLoader>
         </div>
       </div>
     </Styles>

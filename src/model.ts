@@ -31,6 +31,7 @@ export interface Response<T = unknown> {
 export interface GetTradesAPIReturn {
   totalAmount: number
   trades: TradeEntity[]
+  hasMore: boolean
 }
 
 export interface UpdateTradesAPIReturn {
