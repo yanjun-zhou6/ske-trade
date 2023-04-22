@@ -48,6 +48,7 @@ const TradeBoard = (): JSX.Element => {
     [tradeMap, page],
   )
 
+  /** */
   useEffect(function observeTradesChange() {
     const subscription = webSocketClient?.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
@@ -61,9 +62,11 @@ const TradeBoard = (): JSX.Element => {
                 convertTradeFormat(updateTrade),
               )
             })
-            // addTrades.forEach((addTrade) => {
-            //   draftState[addTrade.tradeId] = convertTradeFormat(addTrade)
-            // })
+            addTrades.forEach((addTrade) => {
+              draftState[addTrade.tradeId] = markCreated(
+                convertTradeFormat(addTrade),
+              )
+            })
           }),
         )
       })
@@ -86,6 +89,8 @@ const TradeBoard = (): JSX.Element => {
   )
 
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
+
+  console.log('trades', trades.length)
 
   return (
     <CleanTradeStatusProvider value={cleanTradeStatus}>

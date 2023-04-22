@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { timer } from 'rxjs'
 import { Row as ReactTableRow, TableRowProps } from 'react-table'
 import styled from 'styled-components'
 import { useCleanTradeStatus } from '../../hooks/use-clean-trade-status'
-import { Color, TradeEntity, TradeStatus, Trend } from '../../types'
+import { Color, TradeEntity, Trend } from '../../types'
+import Cell from './cell'
 
 export interface RowColors {
   up: Color
@@ -76,14 +77,9 @@ const Row = ({
       className='tr'
       backgroundColor={backgroundColor}
     >
-      {row.cells.map((cell) => {
-        return (
-          // eslint-disable-next-line react/jsx-key
-          <div {...cell.getCellProps()} className='td'>
-            {cell.render('Cell')}
-          </div>
-        )
-      })}
+      {row.cells.map((cell) => (
+        <Cell cellDescription={cell} key={cell.column.id}></Cell>
+      ))}
     </RowWrapper>
   )
 }

@@ -8,7 +8,9 @@ import { useMemo, useCallback, CSSProperties, PureComponent } from 'react'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import styled from 'styled-components'
-import Row, { RowColors } from './row'
+import Row, { RowColors } from './Row'
+import { scrollbarWidth } from '../../helper'
+import applyContextMenu from '../../hoc/apply-context-menu'
 
 interface TableProp {
   columns: Array<Column<object>>
@@ -27,13 +29,13 @@ const Styles = styled.div`
     border-spacing: 0;
     border: 1px solid black;
 
-    .tr {
-      :last-child {
-        .td {
-          border-bottom: 0;
-        }
-      }
-    }
+    // .tr {
+    //   :last-child {
+    //     .td {
+    //       border-bottom: 0;
+    //     }
+    //   }
+    // }
 
     .th,
     .td {
@@ -140,19 +142,7 @@ const Table = ({
   )
 }
 
-const scrollbarWidth = (): number => {
-  // https://davidwalsh.name/detect-scrollbar-width
-  const scrollDiv = document.createElement('div')
-  scrollDiv.setAttribute(
-    'style',
-    'width: 100px; height: 100px; overflow: scroll; position:absolute; top:-9999px;',
-  )
-  document.body.appendChild(scrollDiv)
-  const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
-  document.body.removeChild(scrollDiv)
-  return scrollbarWidth
-}
-
+const ContextMenuRow = applyContextMenu(Row)
 class RenderRow extends PureComponent<{
   index: number
   style: CSSProperties
@@ -171,8 +161,8 @@ class RenderRow extends PureComponent<{
     if (row) {
       prepareRow(row)
       return (
-        <Row
-          row={rows[index]}
+        <ContextMenuRow
+          row={row}
           tableRowProps={row.getRowProps({
             style,
           })}

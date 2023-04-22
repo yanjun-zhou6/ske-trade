@@ -18,6 +18,7 @@ export const columns = [
   {
     Header: 'Trader Name',
     accessor: 'traderName',
+    width: 200,
   },
   {
     Header: 'Trend',
@@ -26,13 +27,11 @@ export const columns = [
   {
     Header: 'Update Time',
     accessor: 'updateTime',
+    width: 180,
   },
   {
     Header: 'Create Time',
     accessor: 'createTime',
-  },
-  {
-    Header: 'Trade Status',
-    accessor: 'tradeStatus',
+    width: 180,
   },
 ]
