@@ -4,7 +4,7 @@ import { Row as ReactTableRow, TableRowProps } from 'react-table'
 import styled from 'styled-components'
 import { useCleanTradeStatus } from '../../hooks/use-clean-trade-status'
 import { Color, TradeEntity, Trend } from '../../types'
-import Cell from './cell'
+import Cell from './Cell'
 
 export interface RowColors {
   up: Color
