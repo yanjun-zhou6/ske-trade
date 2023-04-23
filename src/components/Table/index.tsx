@@ -36,14 +36,6 @@ const Styles = styled.div`
     border-spacing: 0;
     border: 1px solid black;
 
-    // .tr {
-    //   :last-child {
-    //     .td {
-    //       border-bottom: 0;
-    //     }
-    //   }
-    // }
-
     .th,
     .td {
       margin: 0;

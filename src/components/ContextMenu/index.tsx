@@ -68,7 +68,11 @@ const ContextMenu = ({
   open,
   rightClickedRow,
 }: ContextMenuProps) => {
-  const { removeTrade: removeTradeData, setTradeStatus } = useTrade()
+  const {
+    removeTrade: removeTradeData,
+    setTradeStatus,
+    setTotalAmount,
+  } = useTrade()
   const webSocketClient = useWebSocketClient()
   const highlight = (rightClickedRow?.original as TradeEntity)?.highlight
 
@@ -79,8 +83,9 @@ const ContextMenu = ({
         eventType: 'deleteTrade',
         tradeId,
       })
-      .subscribe(({ code }) => {
+      .subscribe(({ code, data: { totalAmount } }) => {
         if (ResponseCode.Success === code) {
+          setTotalAmount(totalAmount)
           removeTradeData(tradeId)
         } else alert('Sorry, fail to delete trade')
       })

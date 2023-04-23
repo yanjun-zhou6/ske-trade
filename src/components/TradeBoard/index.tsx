@@ -17,12 +17,17 @@ import { TradeProvider } from '../../hooks/use-trade'
 const Title = styled.h2`
   padding-left: 1rem;
 `
+const TotalAmount = styled.div`
+  text-align: end;
+  width: 1370px;
+`
 
 const TradeBoard = (): JSX.Element => {
   const [tradeMap, setTradeMap] = useState<Record<string, TradeEntity>>({})
   const [hasNextPage, setHasNextPage] = useState(true)
   const [page, setPage] = useState(1)
   const [isNextPageLoading, setIsNextPageLoading] = useState(false)
+  const [totalAmount, setTotalAmount] = useState(0)
   const webSocketClient = useWebSocketClient()
 
   const loadTrades = useCallback(async () => {
@@ -34,7 +39,7 @@ const TradeBoard = (): JSX.Element => {
         amount: 10,
       }),
     )
-    const { trades, hasMore } = response.data
+    const { trades, hasMore, totalAmount } = response.data
     const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
       acc[trade.tradeId] = convertTradeFormat(trade)
       return acc
@@ -42,6 +47,7 @@ const TradeBoard = (): JSX.Element => {
     setTradeMap({ ...tradeMap, ...trade })
     setIsNextPageLoading(false)
     setHasNextPage(hasMore)
+    setTotalAmount(totalAmount)
     setPage(page + 1)
   }, [tradeMap, page])
 
@@ -50,7 +56,8 @@ const TradeBoard = (): JSX.Element => {
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
       .subscribe((response) => {
         const data = response.data as UpdateTradesAPIReturn
-        const { updateTrades, addTrades } = data
+        const { updateTrades, addTrades, totalAmount } = data
+        setTotalAmount(totalAmount)
         setTradeMap(
           produce((draftState) => {
             updateTrades.forEach((updateTrade) => {
@@ -114,7 +121,7 @@ const TradeBoard = (): JSX.Element => {
   console.log('trades', trades)
 
   return (
-    <TradeProvider value={{ setTradeStatus, removeTrade }}>
+    <TradeProvider value={{ setTradeStatus, removeTrade, setTotalAmount }}>
       <Title>Trade Board Table</Title>
       <Table
         columns={columns}
@@ -123,6 +130,7 @@ const TradeBoard = (): JSX.Element => {
         loadMore={loadTrades}
         hasNextPage={hasNextPage}
       />
+      <TotalAmount>Total amount of trades: {totalAmount}</TotalAmount>
     </TradeProvider>
   )
 }

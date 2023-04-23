@@ -11,9 +11,11 @@ const creactTradeContext = () => {
       },
     ) => void
     removeTrade: (tradeId: string) => void
+    setTotalAmount: React.Dispatch<React.SetStateAction<number>>
   }>({
     setTradeStatus: () => {},
     removeTrade: () => {},
+    setTotalAmount: () => {},
   })
 
   const useTrade = () => {
