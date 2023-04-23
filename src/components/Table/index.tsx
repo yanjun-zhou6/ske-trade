@@ -4,13 +4,20 @@ import {
   useTable,
   Row as ReactTableRow,
 } from 'react-table'
-import { useMemo, useCallback, CSSProperties, PureComponent } from 'react'
+import {
+  useMemo,
+  useCallback,
+  CSSProperties,
+  PureComponent,
+  useState,
+} from 'react'
 import { FixedSizeList } from 'react-window'
 import InfiniteLoader from 'react-window-infinite-loader'
 import styled from 'styled-components'
 import Row, { RowColors } from './Row'
 import { scrollbarWidth } from '../../helper'
-import applyContextMenu from '../../hoc/apply-context-menu'
+import useContextMenu from '../../hooks/use-context-menu'
+import ContextMenu from '../ContextMenu'
 
 interface TableProp {
   columns: Array<Column<object>>
@@ -59,7 +66,11 @@ const Table = ({
   hasNextPage,
   rowColors,
 }: TableProp): JSX.Element => {
+  const [rightClickedRow, setRightClickedRow] = useState(
+    null as unknown as ReactTableRow<object>,
+  )
   const scrollBarSize = useMemo(() => scrollbarWidth(), [])
+  const { clicked, setClicked, points, setPoints } = useContextMenu()
   const {
     getTableProps,
     getTableBodyProps,
@@ -107,7 +118,18 @@ const Table = ({
           ))}
         </div>
 
-        <div {...getTableBodyProps()}>
+        <div
+          {...getTableBodyProps()}
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setClicked(true)
+            setPoints({
+              x: e.pageX,
+              y: e.pageY,
+            })
+            console.log('Right Click', e.pageX, e.pageY)
+          }}
+        >
           <InfiniteLoader
             isItemLoaded={isItemLoaded}
             itemCount={itemCount}
@@ -131,6 +153,7 @@ const Table = ({
                     prepareRow={prepareRow}
                     rows={rows}
                     rowColors={rowColors}
+                    setRightClickedRow={setRightClickedRow}
                   ></RenderRow>
                 )}
               </FixedSizeList>
@@ -138,22 +161,38 @@ const Table = ({
           </InfiniteLoader>
         </div>
       </div>
+      <ContextMenu
+        top={points.y}
+        left={points.x}
+        open={clicked}
+        rightClickedRow={rightClickedRow}
+      ></ContextMenu>
     </Styles>
   )
 }
 
-const ContextMenuRow = applyContextMenu(Row)
+// const ContextMenuRow = applyContextMenu(Row)
 class RenderRow extends PureComponent<{
   index: number
   style: CSSProperties
   isItemLoaded: (index: number) => boolean
   prepareRow: (row: ReactTableRow<object>) => void
   rows: Array<ReactTableRow<object>>
+  setRightClickedRow: React.Dispatch<
+    React.SetStateAction<ReactTableRow<object>>
+  >
   rowColors?: RowColors
 }> {
   render() {
-    const { index, style, isItemLoaded, prepareRow, rows, rowColors } =
-      this.props
+    const {
+      index,
+      style,
+      isItemLoaded,
+      prepareRow,
+      rows,
+      rowColors,
+      setRightClickedRow,
+    } = this.props
     if (!isItemLoaded(index)) {
       return <div style={style}>Loading</div>
     }
@@ -161,8 +200,9 @@ class RenderRow extends PureComponent<{
     if (row) {
       prepareRow(row)
       return (
-        <ContextMenuRow
+        <Row
           row={row}
+          setRightClickedRow={setRightClickedRow}
           tableRowProps={row.getRowProps({
             style,
           })}

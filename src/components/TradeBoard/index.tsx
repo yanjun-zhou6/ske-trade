@@ -12,7 +12,7 @@ import {
   GetTradesAPIReturn,
   UpdateTradesAPIReturn,
 } from '../../types'
-import { CleanTradeStatusProvider } from '../../hooks/use-clean-trade-status'
+import { TradeProvider } from '../../hooks/use-trade'
 
 const Title = styled.h2`
   padding-left: 1rem;
@@ -25,30 +25,26 @@ const TradeBoard = (): JSX.Element => {
   const [isNextPageLoading, setIsNextPageLoading] = useState(false)
   const webSocketClient = useWebSocketClient()
 
-  const loadTrades = useCallback(
-    async (...args: any) => {
-      setIsNextPageLoading(true)
-      const response = await firstValueFrom(
-        webSocketClient?.request<GetTradesAPIReturn>({
-          eventType: 'getTrades',
-          page,
-          amount: 10,
-        }),
-      )
-      const { trades, hasMore } = response.data
-      const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
-        acc[trade.tradeId] = convertTradeFormat(trade)
-        return acc
-      }, {})
-      setTradeMap({ ...tradeMap, ...trade })
-      setIsNextPageLoading(false)
-      setHasNextPage(hasMore)
-      setPage(page + 1)
-    },
-    [tradeMap, page],
-  )
+  const loadTrades = useCallback(async () => {
+    setIsNextPageLoading(true)
+    const response = await firstValueFrom(
+      webSocketClient.request<GetTradesAPIReturn>({
+        eventType: 'getTrades',
+        page,
+        amount: 10,
+      }),
+    )
+    const { trades, hasMore } = response.data
+    const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
+      acc[trade.tradeId] = convertTradeFormat(trade)
+      return acc
+    }, {})
+    setTradeMap({ ...tradeMap, ...trade })
+    setIsNextPageLoading(false)
+    setHasNextPage(hasMore)
+    setPage(page + 1)
+  }, [tradeMap, page])
 
-  /** */
   useEffect(function observeTradesChange() {
     const subscription = webSocketClient?.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
@@ -74,12 +70,27 @@ const TradeBoard = (): JSX.Element => {
     return () => subscription.unsubscribe()
   }, [])
 
-  const cleanTradeStatus = useCallback(
-    (tradeId: string, properties: Record<'updated' | 'created', false>) => {
+  const setTradeStatus = useCallback(
+    (
+      tradeId: string,
+      properties: {
+        updated?: boolean
+        created?: boolean
+        highlight?: boolean
+      },
+    ) => {
       setTradeMap(
         produce((draftState) => {
-          draftState[tradeId].updated = properties.updated
-          draftState[tradeId].created = properties.created
+          const { updated, created, highlight } = properties
+          if (updated !== undefined) {
+            draftState[tradeId].updated = updated
+          }
+          if (created !== undefined) {
+            draftState[tradeId].created = created
+          }
+          if (highlight !== undefined) {
+            draftState[tradeId].highlight = highlight
+          }
 
           return draftState
         }),
@@ -88,12 +99,22 @@ const TradeBoard = (): JSX.Element => {
     [],
   )
 
+  const removeTrade = useCallback((tradeId: string) => {
+    setTradeMap(
+      produce((draftState) => {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete draftState[tradeId]
+        return draftState
+      }),
+    )
+  }, [])
+
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
 
-  console.log('trades', trades.length)
+  console.log('trades', trades)
 
   return (
-    <CleanTradeStatusProvider value={cleanTradeStatus}>
+    <TradeProvider value={{ setTradeStatus, removeTrade }}>
       <Title>Trade Board Table</Title>
       <Table
         columns={columns}
@@ -102,7 +123,7 @@ const TradeBoard = (): JSX.Element => {
         loadMore={loadTrades}
         hasNextPage={hasNextPage}
       />
-    </CleanTradeStatusProvider>
+    </TradeProvider>
   )
 }
 
@@ -111,8 +132,6 @@ const convertTradeFormat = (trade: TradeEntity) => {
     ...trade,
     updateTime: moment(trade.updateTime).format('hh:mm:ss MM/DD/YYYY'),
     createTime: moment(trade.createTime).format('hh:mm:ss MM/DD/YYYY'),
-    updated: false,
-    created: false,
   }
 }
 

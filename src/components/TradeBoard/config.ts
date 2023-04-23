@@ -27,11 +27,11 @@ export const columns = [
   {
     Header: 'Update Time',
     accessor: 'updateTime',
-    width: 180,
+    width: 200,
   },
   {
     Header: 'Create Time',
     accessor: 'createTime',
-    width: 180,
+    width: 200,
   },
 ]
