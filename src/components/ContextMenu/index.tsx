@@ -78,17 +78,22 @@ const ContextMenu = ({
 
   const removeTrade = useCallback(() => {
     const { tradeId } = rightClickedRow.original as TradeEntity
-    webSocketClient
+    const subscription = webSocketClient
       .request<DeleteTradeAPIReturn>({
         eventType: 'deleteTrade',
         tradeId,
       })
-      .subscribe(({ code, data: { totalAmount } }) => {
-        if (ResponseCode.Success === code) {
-          setTotalAmount(totalAmount)
-          removeTradeData(tradeId)
-        } else alert('Sorry, fail to delete trade')
+      .subscribe({
+        next: ({ code, data: { totalAmount } }) => {
+          if (ResponseCode.Success === code) {
+            setTotalAmount(totalAmount)
+            removeTradeData(tradeId)
+          } else alert('Sorry, fail to delete trade')
+        },
+        error: console.error,
       })
+
+    return () => subscription.unsubscribe()
   }, [rightClickedRow])
 
   const highlightRow = useCallback(() => {

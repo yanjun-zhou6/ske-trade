@@ -31,47 +31,54 @@ const TradeBoard = (): JSX.Element => {
   const webSocketClient = useWebSocketClient()
 
   const loadTrades = useCallback(async () => {
-    setIsNextPageLoading(true)
-    const response = await firstValueFrom(
-      webSocketClient.request<GetTradesAPIReturn>({
-        eventType: 'getTrades',
-        page,
-        amount: 10,
-      }),
-    )
-    const { trades, hasMore, totalAmount } = response.data
-    const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
-      acc[trade.tradeId] = convertTradeFormat(trade)
-      return acc
-    }, {})
-    setTradeMap({ ...tradeMap, ...trade })
-    setIsNextPageLoading(false)
-    setHasNextPage(hasMore)
-    setTotalAmount(totalAmount)
-    setPage(page + 1)
+    try {
+      setIsNextPageLoading(true)
+      const response = await firstValueFrom(
+        webSocketClient.request<GetTradesAPIReturn>({
+          eventType: 'getTrades',
+          page,
+          amount: 10,
+        }),
+      )
+      const { trades, hasMore, totalAmount } = response.data
+      const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
+        acc[trade.tradeId] = convertTradeFormat(trade)
+        return acc
+      }, {})
+      setTradeMap({ ...tradeMap, ...trade })
+      setIsNextPageLoading(false)
+      setHasNextPage(hasMore)
+      setTotalAmount(totalAmount)
+      setPage(page + 1)
+    } catch (e) {
+      console.error(e)
+    }
   }, [tradeMap, page])
 
   useEffect(function observeTradesChange() {
     const subscription = webSocketClient?.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
-      .subscribe((response) => {
-        const data = response.data as UpdateTradesAPIReturn
-        const { updateTrades, addTrades, totalAmount } = data
-        setTotalAmount(totalAmount)
-        setTradeMap(
-          produce((draftState) => {
-            updateTrades.forEach((updateTrade) => {
-              draftState[updateTrade.tradeId] = markUpdated(
-                convertTradeFormat(updateTrade),
-              )
-            })
-            addTrades.forEach((addTrade) => {
-              draftState[addTrade.tradeId] = markCreated(
-                convertTradeFormat(addTrade),
-              )
-            })
-          }),
-        )
+      .subscribe({
+        next: (response) => {
+          const data = response.data as UpdateTradesAPIReturn
+          const { updateTrades, addTrades, totalAmount } = data
+          setTotalAmount(totalAmount)
+          setTradeMap(
+            produce((draftState) => {
+              updateTrades.forEach((updateTrade) => {
+                draftState[updateTrade.tradeId] = markUpdated(
+                  convertTradeFormat(updateTrade),
+                )
+              })
+              addTrades.forEach((addTrade) => {
+                draftState[addTrade.tradeId] = markCreated(
+                  convertTradeFormat(addTrade),
+                )
+              })
+            }),
+          )
+        },
+        error: console.error,
       })
 
     return () => subscription.unsubscribe()
@@ -89,6 +96,8 @@ const TradeBoard = (): JSX.Element => {
       setTradeMap(
         produce((draftState) => {
           const { updated, created, highlight } = properties
+          if (!draftState[tradeId]) return draftState
+
           if (updated !== undefined) {
             draftState[tradeId].updated = updated
           }

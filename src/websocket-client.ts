@@ -48,7 +48,7 @@ const createWebSocketClient = (
     responseSubject.next(JSON.parse(window.atob(event.data)))
   })
 
-  ws.addEventListener('error', console.error)
+  ws.addEventListener('error', responseSubject.error)
 
   return {
     request,
