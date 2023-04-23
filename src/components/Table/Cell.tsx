@@ -9,6 +9,8 @@ interface CellProps {
   cellDescription: ReactTableCell<object, any>
 }
 
+console.log('ArrowUp', ArrowUp)
+
 const StyledArrowUp = styled(ArrowUp)`
   width: 8em;
   height: 2em;

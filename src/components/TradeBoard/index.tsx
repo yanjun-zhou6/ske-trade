@@ -40,6 +40,7 @@ const TradeBoard = (): JSX.Element => {
           amount: 10,
         }),
       )
+      console.log('response', JSON.stringify(response))
       const { trades, hasMore, totalAmount } = response.data
       const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
         acc[trade.tradeId] = convertTradeFormat(trade)
@@ -56,7 +57,7 @@ const TradeBoard = (): JSX.Element => {
   }, [tradeMap, page])
 
   useEffect(function observeTradesChange() {
-    const subscription = webSocketClient?.responseObservable
+    const subscription = webSocketClient.responseObservable
       .pipe(filter(({ eventType }) => eventType === 'updateTrades'))
       .subscribe({
         next: (response) => {
@@ -126,8 +127,6 @@ const TradeBoard = (): JSX.Element => {
   }, [])
 
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
-
-  console.log('trades', trades)
 
   return (
     <TradeProvider value={{ setTradeStatus, removeTrade, setTotalAmount }}>

@@ -1,0 +1,423 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`render TradeBoard with trades returned 1`] = `
+[
+  <h2
+    className="sc-gLDzan buDzqq"
+  >
+    Trade Board Table
+  </h2>,
+  <div
+    className="sc-jTrPJq fRLbar"
+  >
+    <div
+      className="table"
+      role="table"
+    >
+      <div>
+        <div
+          className="tr"
+          role="row"
+          style={
+            {
+              "display": "flex",
+              "width": "1350px",
+            }
+          }
+        >
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trade Name
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trade Symbol
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Current Price
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Last Price
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Trader Name
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trend
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Update Time
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Create Time
+          </div>
+        </div>
+      </div>
+      <div
+        onContextMenu={[Function]}
+        role="rowgroup"
+      >
+        <div
+          onScroll={[Function]}
+          style={
+            {
+              "WebkitOverflowScrolling": "touch",
+              "direction": "ltr",
+              "height": 500,
+              "overflow": "auto",
+              "position": "relative",
+              "width": 1350,
+              "willChange": "transform",
+            }
+          }
+        >
+          <div
+            style={
+              {
+                "height": 40,
+                "pointerEvents": undefined,
+                "width": "100%",
+              }
+            }
+          >
+            <div
+              style={
+                {
+                  "height": 40,
+                  "left": 0,
+                  "position": "absolute",
+                  "right": undefined,
+                  "top": 0,
+                  "width": "100%",
+                }
+              }
+            >
+              Loading
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="sc-eDDNvR QpTv"
+      open={false}
+    >
+      <ul>
+        <li
+          onClick={[Function]}
+        >
+          remove
+        </li>
+        <li
+          onClick={[Function]}
+        >
+          highlight
+        </li>
+      </ul>
+    </div>
+  </div>,
+  <div
+    className="sc-iAEyYk jShygk"
+  >
+    Total amount of trades: 
+    0
+  </div>,
+]
+`;
+
+exports[`render TradeBoard with trades returned 2`] = `
+[
+  <h2
+    className="sc-gLDzan buDzqq"
+  >
+    Trade Board Table
+  </h2>,
+  <div
+    className="sc-jTrPJq fRLbar"
+  >
+    <div
+      className="table"
+      role="table"
+    >
+      <div>
+        <div
+          className="tr"
+          role="row"
+          style={
+            {
+              "display": "flex",
+              "width": "1350px",
+            }
+          }
+        >
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trade Name
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trade Symbol
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Current Price
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Last Price
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Trader Name
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "150px",
+              }
+            }
+          >
+            Trend
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Update Time
+          </div>
+          <div
+            className="th"
+            colSpan={1}
+            role="columnheader"
+            style={
+              {
+                "boxSizing": "border-box",
+                "display": "inline-block",
+                "width": "200px",
+              }
+            }
+          >
+            Create Time
+          </div>
+        </div>
+      </div>
+      <div
+        onContextMenu={[Function]}
+        role="rowgroup"
+      >
+        <div
+          onScroll={[Function]}
+          style={
+            {
+              "WebkitOverflowScrolling": "touch",
+              "direction": "ltr",
+              "height": 500,
+              "overflow": "auto",
+              "position": "relative",
+              "width": 1350,
+              "willChange": "transform",
+            }
+          }
+        >
+          <div
+            style={
+              {
+                "height": 40,
+                "pointerEvents": undefined,
+                "width": "100%",
+              }
+            }
+          >
+            <div
+              style={
+                {
+                  "height": 40,
+                  "left": 0,
+                  "position": "absolute",
+                  "right": undefined,
+                  "top": 0,
+                  "width": "100%",
+                }
+              }
+            >
+              Loading
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className="sc-eDDNvR QpTv"
+      open={false}
+    >
+      <ul>
+        <li
+          onClick={[Function]}
+        >
+          remove
+        </li>
+        <li
+          onClick={[Function]}
+        >
+          highlight
+        </li>
+      </ul>
+    </div>
+  </div>,
+  <div
+    className="sc-iAEyYk jShygk"
+  >
+    Total amount of trades: 
+    0
+  </div>,
+]
+`;
