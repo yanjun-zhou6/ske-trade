@@ -1,6 +1,17 @@
-# Ske-trade
+# ske-2023Q2-trade-client
 
 This is a project which created as I join SKE event in my company EPAM. A simple example of Trading system to practise EngX culture that's promoted by EPAM.
+
+## git started
+
+To start this project for development, please run commands as follow.
+
+```sh
+npm install
+npm start
+```
+
+If you want to deploy for production, please run `npm build` to get the artifacts built.
 
 ## Reference
 
@@ -11,6 +22,12 @@ This is a project which created as I join SKE event in my company EPAM. A simple
 - [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example)
 
 - [React in Ts offical](https://www.typescriptlang.org/docs/handbook/react.html)
+
+- [a react-table component sample with virtualized](https://react-table-v7.tanstack.com/docs/examples/virtualized-rows)
+
+- [react-window](https://github.com/bvaughn/react-window)
+
+- [react-window-infinite-loader](https://github.com/bvaughn/react-window-infinite-loader)
 
 ## Q&A
 

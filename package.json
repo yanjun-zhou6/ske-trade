@@ -31,6 +31,8 @@
     "@types/react-test-renderer": "^18.0.0",
     "@types/react-window": "^1.8.5",
     "@types/react-window-infinite-loader": "^1.0.6",
+    "@types/react": "^18.0.29",
+    "@types/react-dom": "^18.0.11",
     "@types/styled-components": "^5.1.26",
     "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
@@ -75,8 +77,6 @@
   },
   "browserslist": "> 0.25%, not dead",
   "dependencies": {
-    "@types/react": "^18.0.29",
-    "@types/react-dom": "^18.0.11",
     "core-js": "^3.29.1",
     "dotenv": "^16.0.3",
     "immer": "^10.0.1",
@@ -86,7 +86,6 @@
     "react-table": "^7.8.0",
     "react-window": "^1.8.9",
     "react-window-infinite-loader": "^1.0.9",
-    "styled-components": "^5.3.9",
-    "ws": "^8.13.0"
+    "styled-components": "^5.3.9"
   }
 }
