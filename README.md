@@ -26,7 +26,7 @@ Key points from above requirement
 Try to do a system which can be accessed in offline condition and with high performance. Based on this target, conduct tech selection as blow.
 
 - `react-window` to fix long List Rendering issues
-- `servicework` to fix offline access issue
+- `servicework` to fix offline access issue with cache static resouce like js, css, etc.
 - `indexDB` as a cache layer to keep site high performant and access in offline condition
 - `rxjs` as a powerful tool to deal with stuff in async case.
 
