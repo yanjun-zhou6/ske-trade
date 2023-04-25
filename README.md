@@ -13,6 +13,31 @@ npm start
 
 If you want to deploy for production, please run `npm build` to get the artifacts built.
 
+## System target
+
+[trading system requirement](https://houbb.github.io/2020/06/19/system-design-how-to-design-trade-system-01-first-sight#%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E9%9C%80%E6%B1%82)
+
+Key points from above requirement
+
+- high availability
+- high performance
+- high security
+
+Try to do a system which can be accessed in offline condition and with high performance. Based on this target, conduct tech selection as blow.
+
+- `react-window` to fix long List Rendering issues
+- `servicework` to fix offline access issue
+- `indexDB` as a cache layer to keep site high performant and access in offline condition
+- `rxjs` as a powerful tool to deal with stuff in async case.
+
+## Design diagram
+
+The regular process about request and response
+![](./doc/request-process.png)
+
+The process of keeping sync up with sever to update cache automatically
+![](./doc/sync-up.png)
+
 ## Reference
 
 - [Creating a React App… From Scratch.](https://medium.com/@JedaiSaboteur/creating-a-react-app-from-scratch-f3c693b84658)
