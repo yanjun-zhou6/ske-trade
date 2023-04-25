@@ -40,7 +40,6 @@ const TradeBoard = (): JSX.Element => {
           amount: 10,
         }),
       )
-      console.log('response', JSON.stringify(response))
       const { trades, hasMore, totalAmount } = response.data
       const trade = trades.reduce<Record<string, TradeEntity>>((acc, trade) => {
         acc[trade.tradeId] = convertTradeFormat(trade)

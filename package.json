@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "webpack serve --open",
-    "build": "NODE_ENV=production webpack",
+    "build": "cross-env NODE_ENV=production webpack",
     "prepare": "husky install",
     "lint": "eslint src --ext .tsx,.ts --fix",
     "format": "prettier . --write",
@@ -37,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "babel-jest": "^29.5.0",
     "babel-loader": "^9.1.2",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "eslint": "^8.36.0",
