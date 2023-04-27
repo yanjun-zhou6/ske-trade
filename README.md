@@ -128,3 +128,21 @@ The process of keeping sync up with sever to update cache automatically
 - Don't configure path for commands in lint-staged configuration, leave path setting to lint-staged.
 
 - Don't configure auto fixing in auto execution process.
+
+## Result of evalution form audit
+
+> Hi Addy，刚才的 demo 整体表现挺好的，这是我们讨论下来给你的一些改进建议
+>
+> To be improved:
+>
+> - Demo/presentation skills (time control and highlight key points).
+>
+> - EngX (security tools like SonarQube and Snyk, e2e tests, CI/CD, monitoring).
+>
+> 个人建议:
+>
+> - service worker 实现 offline 和 indexedDB 缓存的设计很好，后面有空闲的时候可以继续做下去
+>
+> - websocket 是双向连接，感觉换成 EventSource 应该性能会更好，可以尝试下
+>
+> - 都尝试过后，建议在我们 team 内部做一下 knowledge sharing
