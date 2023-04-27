@@ -101,8 +101,11 @@ const Table = ({
             // eslint-disable-next-line react/jsx-key
             <div {...headerGroup.getHeaderGroupProps()} className='tr'>
               {headerGroup.headers.map((column) => (
-                // eslint-disable-next-line react/jsx-key
-                <div {...column.getHeaderProps()} className='th'>
+                <div
+                  {...column.getHeaderProps()}
+                  className='th'
+                  key={column.id}
+                >
                   {column.render('Header')}
                 </div>
               ))}
@@ -135,7 +138,6 @@ const Table = ({
                 onItemsRendered={onItemsRendered}
                 ref={ref}
               >
-                {/* {RenderRow as ComponentType<ListChildComponentProps<any>>} */}
                 {({ index, style }) => (
                   <RenderRow
                     index={index}
@@ -162,7 +164,6 @@ const Table = ({
   )
 }
 
-// const ContextMenuRow = applyContextMenu(Row)
 class RenderRow extends PureComponent<{
   index: number
   style: CSSProperties
