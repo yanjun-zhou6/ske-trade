@@ -126,6 +126,7 @@ const TradeBoard = (): JSX.Element => {
   }, [])
 
   const trades = useMemo(() => Object.values(tradeMap), [tradeMap])
+  console.log('trade', trades.length)
 
   return (
     <TradeProvider value={{ setTradeStatus, removeTrade, setTotalAmount }}>
