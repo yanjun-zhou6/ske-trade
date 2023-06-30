@@ -2,6 +2,8 @@
 
 This is a project which created as I join SKE event in my company EPAM. A simple example of Trading system to practise EngX culture that's promoted by EPAM.
 
+Based on the principle of minimal usage of framework, scaffold and library to complement with functional programming that utilizes the integration between `Rxjs` and WebSocket to keep up with `React`.
+
 ## git started
 
 To start this project for development, please run commands as follow.
@@ -56,6 +58,16 @@ The regular process about request and response
 
 The process of keeping sync up with sever to update cache automatically
 ![](./doc/sync-up.png)
+
+## Features
+
+- ✅ Initially request trade list and show in a table
+- ✅ Update trades and newly add trades
+- ✅ Delete and highlight trades in context menu
+- ✅ Infinite loading
+- ✅ Virtual render list
+- Offline by service work
+- Cache dynamic data with indexedDB
 
 ## Reference
 
@@ -128,21 +140,3 @@ The process of keeping sync up with sever to update cache automatically
 - Don't configure path for commands in lint-staged configuration, leave path setting to lint-staged.
 
 - Don't configure auto fixing in auto execution process.
-
-## Result of evalution form audit
-
-> Hi Addy，刚才的 demo 整体表现挺好的，这是我们讨论下来给你的一些改进建议
->
-> To be improved:
->
-> - Demo/presentation skills (time control and highlight key points).
->
-> - EngX (security tools like SonarQube and Snyk, e2e tests, CI/CD, monitoring).
->
-> 个人建议:
->
-> - service worker 实现 offline 和 indexedDB 缓存的设计很好，后面有空闲的时候可以继续做下去
->
-> - websocket 是双向连接，感觉换成 EventSource 应该性能会更好，可以尝试下
->
-> - 都尝试过后，建议在我们 team 内部做一下 knowledge sharing
