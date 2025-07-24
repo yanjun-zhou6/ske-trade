@@ -51,13 +51,17 @@ Try to do a system which can be accessed in offline condition and with high perf
 - `indexDB` as a cache layer to keep site high performant and access in offline condition
 - `rxjs` as a powerful tool to deal with stuff in async event case.
 
-## Design diagram
+## Flow chart
 
 The regular process about request and response
 ![](./doc/request-process.png)
 
 The process of keeping sync up with sever to update cache automatically
 ![](./doc/sync-up.png)
+
+## Websocket client design
+
+![](./doc/websocket_client.excalidraw.png)
 
 ## Features
 

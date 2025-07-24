@@ -9,6 +9,7 @@ export interface Message {
 
 export interface WebSocketClient {
   request: <T>(message: Message) => Observable<Response<T>>
+  close: () => void
   responseObservable: Observable<Response>
 }
 
@@ -19,21 +20,31 @@ const createWebSocketClient = (
   ) => Observable<Response> = (responseObservable) => responseObservable,
 ): WebSocketClient => {
   let messagePool: Message[] = []
-  const ws = new WebSocket(address)
+  let ws = new WebSocket(address)
   const responseSubject = new Subject<Response>()
   const responseObservable = intercept(responseSubject.asObservable())
+
+  const reconnect = () => {
+    ws = new WebSocket(address)
+  }
 
   const request = <T>(message: Message) => {
     if (ws.readyState === ws.OPEN) {
       ws.send(window.btoa(JSON.stringify(message)))
     } else if (ws.readyState === ws.CONNECTING) {
       messagePool.push(message)
-    } else throw Error('websocket is closing or closed')
+    } else {
+      // ws is in closed or closing status, then reconnect
+      messagePool.push(message)
+      reconnect()
+    }
 
     return responseObservable.pipe(
       filter(({ eventType }) => eventType === message.eventType),
     ) as Observable<Response<T>>
   }
+
+  const close = () => ws.close()
 
   ws.addEventListener('open', () => {
     if (messagePool.length) {
@@ -52,6 +63,7 @@ const createWebSocketClient = (
 
   return {
     request,
+    close,
     responseObservable,
   }
 }
